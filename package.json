@@ -1,0 +1,43 @@
+{
+  "name": "stisiv-api",
+  "version": "1.0.0",
+  "description": "The data portion to the stisiv frontend",
+  "main": "app.js",
+  "private": true,
+  "engines": {
+    "node": "0.12.x"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --harmony",
+    "start": "NODE_ENV=production node --harmony app.js",
+    "dev": "NODE_ENV=dev ./node_modules/.bin/nodemon --harmony app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/swlkr/stisiv-api"
+  },
+  "author": "Sean Walker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/swlkr/stisiv-api/issues"
+  },
+  "homepage": "https://github.com/swlkr/stisiv-api",
+  "dependencies": {
+    "acidjs": "0.1.0",
+    "bcrypt": "^0.8.0",
+    "db-migrate": "^0.9.9",
+    "dotenv": "^0.5.1",
+    "jsonwebtoken": "^3.2.2",
+    "koa": "^0.18.0",
+    "koa-bodyparser": "^1.4.0",
+    "koa-jwt": "^0.1.7",
+    "koa-logger": "^1.2.2",
+    "koa-override-method": "^1.0.0",
+    "koa-route": "^2.4.0",
+    "mocha": "^2.0.1",
+    "newrelic": "^1.17.3",
+    "nodemon": "^1.3.7",
+    "pg": "^4.1.0",
+    "validator": "^3.22.2"
+  }
+}
