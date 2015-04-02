@@ -12,6 +12,7 @@
     "new-cap": [0],
     "strict": [2, "never"],
     "quotes": [2, "double"],
+    "camelcase": 0,
     "comma-dangle": [0],
     "eol-last": [0],
     "no-mixed-requires": [0],
