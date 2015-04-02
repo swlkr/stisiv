@@ -1,4 +1,4 @@
-# stisiV API
+# stisiv API
 
 ### Getting started
 
