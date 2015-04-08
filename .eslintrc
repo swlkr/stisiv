@@ -1,13 +1,9 @@
 {
-  // I want to use babel-eslint for parsing!
   "parser": "babel-eslint",
   "env": {
-    // I write for browser
     "browser": false,
-    // in CommonJS
     "node": true
   },
-  // To give you an idea how to override rule options:
   "rules": {
     "new-cap": [0],
     "strict": [2, "never"],
@@ -17,23 +13,6 @@
     "eol-last": [0],
     "no-mixed-requires": [0],
     "no-underscore-dangle": [0],
-    "no-multi-spaces": 0,
-    "react/jsx-quotes": 1,
-    "react/jsx-no-undef": 1,
-    "react/jsx-uses-react": 1,
-    "react/jsx-uses-vars": 1,
-    "react/no-did-mount-set-state": 1,
-    "react/no-did-update-set-state": 1,
-    "react/no-multi-comp": 1,
-    "react/prop-types": 1,
-    "react/react-in-jsx-scope": 1,
-    "react/self-closing-comp": 1,
-    "react/wrap-multilines": 1
-  },
-  "ecmaFeatures": {
-    "jsx": true
-  },
-  "plugins": [
-    "react"
-  ]
+    "no-multi-spaces": 0
+  }
 }
