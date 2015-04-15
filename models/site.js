@@ -57,4 +57,8 @@ Site.create = function *(url, user) {
   };
 };
 
+Site.list = function *(user_id) {
+  return Site.where("user_id = ?", user_id).run();
+};
+
 module.exports = Site;
