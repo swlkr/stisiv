@@ -58,7 +58,8 @@ Site.create = function *(url, user) {
 };
 
 Site.list = function *(user_id) {
-  return Site.where("user_id = ?", user_id).run();
+  var response = yield acid.Query({text: "select * from sites_with_visit_count($1)", values: [user_id]});
+  return response.rows;
 };
 
 module.exports = Site;
