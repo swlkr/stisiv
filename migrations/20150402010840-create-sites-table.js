@@ -7,7 +7,7 @@ exports.up = function(db, callback) {
     user_id: { type: 'int', notNull: true },
     identifier: { type: 'string', unique: true, notNull: true },
     url: { type: 'string', notNull: true },
-    created_at: { type: 'date', notNull: true, defaultValue: 'now'}
+    created_at: { type: 'date', notNull: true, defaultValue: new String('CURRENT_DATE')}
   }, callback);
 };
 
