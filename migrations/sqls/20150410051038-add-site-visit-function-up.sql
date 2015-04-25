@@ -8,9 +8,10 @@ AS $$
 BEGIN
     return query
     select sites.id, sites.url, count(site_id) as visit_count
-    from visits
-    join sites on sites.id = visits.site_id
+    from sites
+    left outer join visits on visits.site_id = sites.id
     where sites.user_id = user_id_parameter
-    group by sites.id, sites.url;
+    group by sites.id, sites.url
+    order by sites.url;
 END;
 $$ LANGUAGE plpgsql;
