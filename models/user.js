@@ -4,8 +4,9 @@ const config    = require("../config"),
       validator = require("validator"),
       jwt       = require("jsonwebtoken");
 
-const PASSWORD_LENGTH      = 7,
-      PASSWORD_HASH_LENGTH = 7,
+const PASSWORD_LENGTH      = 13,
+      PASSWORD_HASH_LENGTH = 8,
+      MAX_PASSWORD_LENGTH  = 100,
       ONE_WEEK             = 10080;
 
 const User = acid.Model("users");
@@ -13,7 +14,8 @@ const User = acid.Model("users");
 const messages = {};
 messages.invalid = {
   email: "You need to use an actual email address",
-  password: "Your password needs to be longer than 7 characters",
+  password: "Your password needs to be longer than " + PASSWORD_LENGTH +  " characters",
+  password_too_long: "Your password can't be longer than " + MAX_PASSWORD_LENGTH + " characters",
   login: "Wrong passwords don't fly around here",
   "duplicate key value violates unique constraint 'users_email_key'": "You've already signed up!"
 };
@@ -26,6 +28,10 @@ User.define("isValid", function() {
 User.define("hasValidPassword", function() {
   this.errors = [];
   if(this.password.length <= PASSWORD_LENGTH) {
+    this.errors.push(messages.invalid.password);
+  }
+
+  if(this.password.length >= 100) {
     this.errors.push(messages.invalid.password);
   }
 
