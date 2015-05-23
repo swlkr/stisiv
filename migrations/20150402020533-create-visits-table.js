@@ -7,7 +7,7 @@ exports.up = function(db, callback) {
     site_id: { type: 'int', notNull: true },
     ip_address: { type: 'string', notNull: false },
     user_agent: { type: 'string', notNull: false },
-    created_at: { type: 'date', notNull: true, defaultValue: new String('CURRENT_DATE')}
+    created_at: { type: 'timestamp', notNull: true, defaultValue: new String('CURRENT_TIMESTAMP')}
   }, callback);
 };
 
