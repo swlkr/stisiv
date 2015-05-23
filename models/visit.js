@@ -1,22 +1,26 @@
-const config    = require("../config"),
-      acid      = require("acidjs")(config.db.url),
-      Site      = require("./site");
+const config = require("../config"),
+      acid   = require("acidjs")(config.db.url);
 
-const Visit = acid.Model("visits");
+const table = {
+  visits: "visits",
+  sites: "sites"
+};
+
+const Visit = {};
 
 Visit.create = function *(identifier, request) {
 
-  var sites = yield Site.where("identifier = ?", identifier).run();
-  var site = sites[0];
+  var rows = yield acid.where(table.sites, "identifier = $1", identifier);
+  var site = rows[0];
 
-  var visit = new Visit({
+  var data = {
     site_id: site.id,
     ip_address: request.ip,
     user_agent: request.headers["user-agent"]
-  });
+  };
 
   // This might throw an error
-  return yield visit.save();
+  return yield acid.insert(table.visits, data);
 };
 
 module.exports = Visit;

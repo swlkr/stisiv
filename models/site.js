@@ -2,64 +2,40 @@ const config    = require("../config"),
       acid      = require("acidjs")(config.db.url),
       validator = require("validator");
 
-const Site = acid.Model("sites");
-
 const messages = {};
 messages.invalid = {
   url: "Try entering a real url"
 };
-Site.messages = messages;
 
-Site.define("isValid", function() {
-  return this.hasValidUrl();
-});
+const table = "sites";
 
-Site.define("hasValidUrl", function() {
-  this.errors = [];
-  if(!validator.isURL(this.url)) {
-    this.errors.push(messages.invalid.url);
-  }
-
-  return this.errors.length === 0;
-});
+var Site = {};
 
 Site.create = function *(url, user) {
-  // TODO: Find a better place for this?
+  if(!validator.isURL(url)) {
+    throw ({ message: messages.invalid.url, status: 422 });
+  }
 
-  // Business logic to create a site:
-
-  // 1. Check for a valid url
-  // 2. Generate identifier
-  // 2. Copy 1px image from filesystem
-  // 3. Rename image to `${identifier}.jpg`
-  // 4. Save new image with identifier name
-  // 5. Save the site
-  // 6. Return site
-
-  var site = new Site({
+  var data = {
     url: url,
     user_id: user.id,
     identifier: Math.random().toString(36).slice(2)
-  });
+  };
 
-  if(!site.isValid()) {
-    throw ({message: site.errors.join(", "), status: 422});
-  }
-
-  // This might throw an error
-  var savedSite = yield site.save();
+  var rows = yield acid.insert(table, data);
+  var site = rows[0];
 
   return {
-    id: savedSite.id,
-    url: savedSite.url,
-    identifier: savedSite.identifier,
+    id: site.id,
+    url: site.url,
+    identifier: site.identifier,
     visitCount: 0
   };
 };
 
 Site.list = function *(user_id) {
-  var response = yield acid.Query({text: "select * from sites_with_visit_count($1)", values: [user_id]});
-  return response.rows;
+  var sites = yield acid.sql("select * from sites_with_visit_count($1)", [user_id]);
+  return sites;
 };
 
 module.exports = Site;

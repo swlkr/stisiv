@@ -1,12 +1,22 @@
-const User      = require("./user"),
+const config    = require("../config"),
+      bcrypt    = require("bcrypt"),
+      acid      = require("acidjs")(config.db.url),
       jwt       = require("jsonwebtoken"),
-      config    = require("../config"),
       ONE_WEEK  = 10080;
 
 const messages = {
   missingParameters: "Come on! You can't just leave 'em blank!",
-  notFound: "Terribly sorry but we couldn't find you"
+  notFound: "Terribly sorry but we couldn't find you",
+  login: "Wrong passwords don't fly around here"
 };
+
+const table = {
+  users: "users"
+};
+
+function hasCorrectPassword(entered, stored) {
+  return bcrypt.compareSync(entered, stored);
+}
 
 const Token = {
   create: function *(email, password) {
@@ -14,16 +24,16 @@ const Token = {
       throw { status: 401, message: messages.missingParameters };
     }
 
-    const users = yield User.where("email = ?", email).run();
+    const rows = yield acid.where(table.users, "email = $1", email);
 
-    if(users.length === 0) {
+    if(rows.length === 0) {
       throw { status: 404, message: messages.notFound };
     }
 
-    var user = users[0];
+    const user = rows[0];
 
-    if(!user.hasCorrectPassword(password)) {
-      throw { status: 401, message: user.errors.join(", ") };
+    if(!hasCorrectPassword(password, user.password)) {
+      throw { status: 401, message: messages.login };
     }
 
     const token = jwt.sign(

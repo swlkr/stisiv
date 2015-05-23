@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/swlkr/stisiv-api",
   "dependencies": {
-    "acidjs": "0.1.0",
+    "acidjs": "1.0.0",
     "bcrypt": "^0.8.0",
     "db-migrate": "^0.9.9",
     "dotenv": "^0.5.1",

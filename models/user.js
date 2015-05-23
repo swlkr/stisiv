@@ -9,60 +9,34 @@ const PASSWORD_LENGTH      = 13,
       MAX_PASSWORD_LENGTH  = 100,
       ONE_WEEK             = 10080;
 
-const User = acid.Model("users");
-
-const messages = {};
-messages.invalid = {
-  email: "You need to use an actual email address",
-  password: "Your password needs to be longer than " + PASSWORD_LENGTH +  " characters",
-  password_too_long: "Your password can't be longer than " + MAX_PASSWORD_LENGTH + " characters",
-  login: "Wrong passwords don't fly around here",
-  "duplicate key value violates unique constraint 'users_email_key'": "You've already signed up!"
+const table = {
+  users: "users"
 };
-User.messages = messages;
 
-User.define("isValid", function() {
-  return this.hasValidEmail() && this.hasValidPassword();
-});
+const User = {};
 
-User.define("hasValidPassword", function() {
-  this.errors = [];
-  if(this.password.length <= PASSWORD_LENGTH) {
-    this.errors.push(messages.invalid.password);
+const messages = {
+  invalid: {
+    email: "You need to use an actual email address",
+    password: "Your password needs to be longer than " + PASSWORD_LENGTH +  " characters",
+    password_too_long: "Your password can't be longer than " + MAX_PASSWORD_LENGTH + " characters",
+    "duplicate key value violates unique constraint 'users_email_key'": "You've already signed up!"
   }
+};
 
-  if(this.password.length >= 100) {
-    this.errors.push(messages.invalid.password);
-  }
+function hasValidPassword(password) {
+  return password.length >= PASSWORD_LENGTH && password.length < 100;
+}
 
-  return this.errors.length === 0;
-});
+function hasValidEmail(email) {
+  return validator.isEmail(email);
+}
 
-User.define("hasValidEmail", function() {
-  this.errors = [];
-  if(!validator.isEmail(this.email)) {
-    this.errors.push(messages.invalid.email);
-  }
-
-  return this.errors.length === 0;
-});
-
-User.define("hasCorrectPassword", function(password) {
-  this.errors = [];
-  if(!bcrypt.compareSync(password, this.password)) {
-    this.errors.push(messages.invalid.login);
-  }
-
-  return this.errors.length === 0;
-});
-
-User.define("hashPassword", function() {
-  this.password = bcrypt.hashSync(this.password, PASSWORD_HASH_LENGTH);
-});
+function hashPassword(password) {
+  return bcrypt.hashSync(password, PASSWORD_HASH_LENGTH);
+}
 
 User.create = function *(email, password) {
-  // TODO: Find a better place for this?
-
   // Business logic to create a user:
 
   // 1. Check for a valid email and password
@@ -71,34 +45,39 @@ User.create = function *(email, password) {
   // 4. Create a user email
   // 5. Generate an auth token
 
-  var user = new User({
-    email: email,
-    password: password
-  });
-
-  if(!user.isValid()) {
-    throw ({message: user.errors.join(", "), status: 422});
+  if(!hasValidEmail(email)) {
+    throw { message: messages.invalid.email, status: 422 };
   }
 
-  user.hashPassword();
+  if(!hasValidPassword(password)) {
+    throw { message: messages.invalid.password, status: 422 };
+  }
 
-  // This might throw an error
-  var savedUser = yield user.save();
+  var hashedPassword = hashPassword(password);
+
+  var data = {
+    email: email,
+    password: hashedPassword
+  };
+
+  // TODO: Handle duplicate emails
+  var rows = yield acid.insert(table.users, data);
+  var user = rows[0];
 
   var token = jwt.sign(
-    { id: savedUser.id },
+    { id: user.id },
     config.app.secret,
     {
       expiresInMinutes: ONE_WEEK,
-      issuer: savedUser.email
+      issuer: user.email
     }
   );
 
   return {
     token: token,
     user: {
-      id: savedUser.id,
-      email: savedUser.email,
+      id: user.id,
+      email: user.email,
     }
   };
 };
