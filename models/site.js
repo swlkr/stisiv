@@ -3,15 +3,32 @@ const config    = require("../config"),
       validator = require("validator"),
       tables    = require("./tables");
 
-const messages = {};
-messages.invalid = {
-  url: "Try entering a real url"
-};
+const FREE_TRIAL_SITES = 1;
 
+const messages = {
+  invalid: {
+    url: "Try entering a real url"
+  },
+  business: {
+    trialLimitReached: "Sorry but you can only create one site while on a free trial"
+  }
+};
 
 var Site = {};
 
+Site.count = function *(userId) {
+  var rows = yield acid.where(tables.sites, "user_id = $1", userId);
+  return rows.length;
+};
+
 Site.create = function *(url, user) {
+  // Business logic alert
+  // Move this somewhere more business logic-y?
+  var sites = yield Site.count(user.id);
+  if(sites >= FREE_TRIAL_SITES) {
+    throw ({ message: messages.business.trialLimitReached, status: 422 });
+  }
+
   if(!validator.isURL(url)) {
     throw ({ message: messages.invalid.url, status: 422 });
   }
