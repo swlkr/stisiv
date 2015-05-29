@@ -1,13 +1,13 @@
 const config    = require("../config"),
       acid      = require("acidjs")(config.db.url),
-      validator = require("validator");
+      validator = require("validator"),
+      tables    = require("./tables");
 
 const messages = {};
 messages.invalid = {
   url: "Try entering a real url"
 };
 
-const table = "sites";
 
 var Site = {};
 
@@ -22,7 +22,7 @@ Site.create = function *(url, user) {
     identifier: Math.random().toString(36).slice(2)
   };
 
-  var rows = yield acid.insert(table, data);
+  var rows = yield acid.insert(tables.sites, data);
   var site = rows[0];
 
   return {
