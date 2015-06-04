@@ -1,7 +1,7 @@
 {
-  "name": "stisiv-api",
+  "name": "visics-api",
   "version": "1.0.0",
-  "description": "The data portion to the stisiv frontend",
+  "description": "The data portion to the visics frontend",
   "main": "app.js",
   "private": true,
   "engines": {
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/swlkr/stisiv-api"
+    "url": "https://github.com/swlkr/visics-api"
   },
   "author": "Sean Walker",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/swlkr/stisiv-api/issues"
+    "url": "https://github.com/swlkr/visics-api/issues"
   },
-  "homepage": "https://github.com/swlkr/stisiv-api",
+  "homepage": "https://github.com/swlkr/visics-api",
   "dependencies": {
     "acidjs": "1.0.0",
     "bcrypt": "^0.8.0",
