@@ -1,0 +1,7 @@
+Thanks for signing up!
+
+Please confirm your email address by clicking the link below.
+
+{{=it.confirmationUrl}}
+
+- Sean from Visics
