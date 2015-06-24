@@ -36,6 +36,17 @@ function hashPassword(password) {
   return bcrypt.hashSync(password, PASSWORD_HASH_LENGTH);
 }
 
+User.confirm = function *(token) {
+  var rows = yield acid.update(table.users, { confirmed_at: new Date() }, "confirmation_token = $1", token);
+  var user = rows[0];
+
+  return {
+    id: user.id,
+    email: user.email,
+    confirmed_at: user.confirmed_at
+  };
+};
+
 User.create = function *(email, password) {
   // Business logic to create a user:
 
