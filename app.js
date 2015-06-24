@@ -36,13 +36,13 @@ app.use(function *(next) {
   }
 });
 
-// Open Routes
+// Unauthenticated routes
 routes.open().map(routes.setup);
 
 // Eveything below this requires authentication
 app.use(jwt({ secret: config.app.secret }));
 
-// Auth routes
+// Authenticated routes
 routes.auth().map(routes.setup);
 
 app.listen(config.app.port);
