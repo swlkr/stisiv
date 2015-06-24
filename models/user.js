@@ -2,7 +2,8 @@ const config    = require("../config"),
       acid      = require("acidjs")(config.db.url),
       bcrypt    = require("bcrypt"),
       validator = require("validator"),
-      jwt       = require("jsonwebtoken");
+      jwt       = require("jsonwebtoken"),
+      emails    = require("../lib/emails");
 
 const PASSWORD_LENGTH      = 13,
       PASSWORD_HASH_LENGTH = 8,
@@ -68,12 +69,18 @@ User.create = function *(email, password) {
 
   var data = {
     email: email,
-    password: hashedPassword
+    password: hashedPassword,
+    confirmation_token: Math.random().toString(36).slice(2) // generate random alphanumeric string
   };
 
   // TODO: Handle duplicate emails
   var rows = yield acid.insert(table.users, data);
   var user = rows[0];
+
+  // create confirmation_url
+  // fire off a welcome email
+  var confirmationUrl = config.app.origin + "/users/" + user.confirmation_token + "/confirm";
+  yield emails.welcome.send(user.email, { confirmationUrl: confirmationUrl });
 
   var token = jwt.sign(
     { id: user.id },
