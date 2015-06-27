@@ -38,7 +38,11 @@ function hashPassword(password) {
 }
 
 User.confirm = function *(token) {
-  var rows = yield acid.update(table.users, { confirmed_at: new Date() }, "confirmation_token = $1", token);
+  var rows = yield acid.update(table.users, { confirmed_at: new Date() }, "confirmation_token = $1 and confirmed_at is null", token);
+
+  // Handle invalid tokens (or already confirmed users)
+  if(rows.length === 0) { throw { status: 422, message: "Sorry, that token is invalid!" }; }
+
   var user = rows[0];
 
   return {
