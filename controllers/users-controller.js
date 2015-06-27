@@ -4,7 +4,7 @@ const UsersController = {
   routes: function() {
     return [
       { method: "post", url: "/users", fn: this.create, auth: false },
-      { method: "get", url: "/users/:token/confirm", fn: this.confirm, auth: false }
+      { method: "put", url: "/users/:token/confirm", fn: this.confirm, auth: false }
     ];
   },
   create: function *() {
