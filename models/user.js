@@ -21,7 +21,9 @@ const messages = {
     email: "You need to use an actual email address",
     password: "Your password needs to be longer than " + PASSWORD_LENGTH +  " characters",
     password_too_long: "Your password can't be longer than " + MAX_PASSWORD_LENGTH + " characters",
-    "duplicate key value violates unique constraint 'users_email_key'": "You've already signed up!"
+    passwords_dont_match: "New and confirm passwords don't match",
+    "duplicate key value violates unique constraint 'users_email_key'": "You've already signed up!",
+    data: "Your data is blank bro"
   }
 };
 
@@ -36,6 +38,50 @@ function hasValidEmail(email) {
 function hashPassword(password) {
   return bcrypt.hashSync(password, PASSWORD_HASH_LENGTH);
 }
+
+function canUpdatePassword(password, newPassword, confirmPassword) {
+  var currentPasswordIsCorrect = bcrypt.compareSync(password, hashPassword(password));
+  var newAndConfirmAreTheSame = newPassword === confirmPassword;
+
+  return currentPasswordIsCorrect && newAndConfirmAreTheSame;
+}
+
+User.update = function *(id, data) {
+
+  if(!data) {
+    throw {
+      status: 422,
+      message: messages.invalid.data
+    };
+  }
+
+  // Check for password update
+  // Confirm password and new password should be the same
+  if(!canUpdatePassword(data.password, data.newPassword, data.confirmPassword)) {
+    throw {
+      status: 422,
+      message: messages.invalid.passwords_dont_match
+    };
+  }
+
+  if(!hasValidPassword(data.newPassword)) {
+    throw { message: messages.invalid.password, status: 422 };
+  }
+
+  var newHashedPassword = hashPassword(data.newPassword);
+
+  var rows = yield acid.update(table.users, { password: newHashedPassword }, "id = $1", id);
+
+  if(rows.length === 0) {
+    throw { status: 422, message: "Could not update user. Check your properties" };
+  }
+
+  var user = rows[0];
+  return {
+    id: user.id,
+    email: user.email
+  };
+};
 
 User.confirm = function *(token) {
   var rows = yield acid.update(table.users, { confirmed_at: new Date() }, "confirmation_token = $1 and confirmed_at is null", token);
