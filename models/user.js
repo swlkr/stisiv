@@ -24,7 +24,12 @@ const messages = {
     passwords_dont_match: "New and confirm passwords don't match",
     "duplicate key value violates unique constraint 'users_email_key'": "You've already signed up!",
     data: "Your data is blank bro"
-  }
+  },
+  forgotPassword: {
+    noUserFound: "Email reminder sent",
+    checkEmail: "Check your email to reset your password :)",
+    passwordReset: "Your password was reset"
+  },
 };
 
 function hasValidPassword(password) {
@@ -45,6 +50,50 @@ function canUpdatePassword(password, newPassword, confirmPassword) {
 
   return currentPasswordIsCorrect && newAndConfirmAreTheSame;
 }
+
+User.forgotPassword = function *(email) {
+  if(!email) {
+    throw { status: 422, message: messages.invalid.data };
+  }
+
+  // Update user with a reset password token
+  var resetPasswordToken = Math.random().toString(36).slice(2);
+  var rows = yield acid.update(table.users, { reset_password_token: resetPasswordToken }, "email = $1", email);
+
+  // This means that there was no user with that email
+  // Dont tell anyone, just act like everything is cool
+  if(rows.length === 0) {
+    throw { status: 200, message: messages.forgotPassword.noUserFound };
+  }
+
+  // send forgot password email
+  var user = rows[0];
+  var resetPasswordUrl = config.app.origin + "/#/reset-password/" + resetPasswordToken;
+  yield emails.forgotPassword.send(user.email, { resetPasswordUrl: resetPasswordUrl });
+
+  return {
+    message: messages.forgotPassword.checkEmail
+  };
+};
+
+User.resetPassword = function *(body, token) {
+  if(!body || !body.password || !body.confirmPassword) {
+    throw { status: 422, message: messages.invalid.data };
+  }
+
+  if(body.password !== body.confirmPassword) {
+    throw { status: 422, message: messages.invalid.passwords_dont_match };
+  }
+
+  var hashedPassword = hashPassword(body.password);
+
+  var rows = yield acid.update(table.users, { password: hashedPassword, reset_password_token: null }, "reset_password_token = $1", token);
+
+  // Always set no matter what happens?
+  return {
+    message: messages.forgotPassword.passwordReset
+  }
+};
 
 User.update = function *(id, data) {
 

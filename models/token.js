@@ -24,19 +24,19 @@ const Token = {
       throw { status: 401, message: messages.missingParameters };
     }
 
-    const rows = yield acid.where(table.users, "email = $1", email);
+    var rows = yield acid.where(table.users, "email = $1", email);
 
     if(rows.length === 0) {
       throw { status: 404, message: messages.notFound };
     }
 
-    const user = rows[0];
+    var user = rows[0];
 
     if(!hasCorrectPassword(password, user.password)) {
       throw { status: 401, message: messages.login };
     }
 
-    const token = jwt.sign(
+    var token = jwt.sign(
       { id: user.id },
       config.app.secret,
       { expiresInMinutes: ONE_WEEK, issuer: user.email }
