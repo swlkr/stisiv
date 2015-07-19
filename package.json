@@ -28,6 +28,7 @@
     "db-migrate": "^0.9.9",
     "dot": "^1.0.3",
     "dotenv": "^0.5.1",
+    "graphql": "^0.1.4",
     "jsonwebtoken": "^3.2.2",
     "koa": "^0.18.0",
     "koa-bodyparser": "^1.4.0",

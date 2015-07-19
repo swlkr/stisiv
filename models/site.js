@@ -50,9 +50,8 @@ Site.create = function *(url, user) {
   };
 };
 
-Site.list = function *(user_id) {
-  var sites = yield acid.sql("select * from sites_with_visit_count($1)", [user_id]);
-  return sites;
+Site.list = function (user_id) {
+  return acid.sql("select * from sites_with_visit_count($1)", [user_id]);
 };
 
 Site.graphData = function *(id, user) {
