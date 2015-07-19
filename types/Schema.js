@@ -5,7 +5,7 @@ const graphql           = require("graphql"),
       GraphQLNonNull    = graphql.GraphQLNonNull,
       GraphQLList       = graphql.GraphQLList,
       SiteType          = require("./SiteType"),
-      Site              = require("../models/Site");
+      Site              = require("../models/site");
 
 var Schema = new GraphQLSchema({
   query: new GraphQLObjectType({
