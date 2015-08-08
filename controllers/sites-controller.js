@@ -9,13 +9,13 @@ const SitesController = {
     ];
   },
   create: function *() {
-    this.body = yield Site.create(this.request.body.url, this.user);
+    this.body = yield Site.create(this.request.body.url, this.state.user);
   },
   list: function *() {
-    this.body = yield Site.list(this.user.id);
+    this.body = yield Site.list(this.state.user.id);
   },
   show: function *(id) {
-    this.body = yield Site.graphData(id, this.user);
+    this.body = yield Site.graphData(id, this.state.user);
   }
 };
 
