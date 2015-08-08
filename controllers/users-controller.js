@@ -20,7 +20,7 @@ const UsersController = {
   },
 
   update: function *() {
-    this.body = yield User.update(this.user.id, this.request.body);
+    this.body = yield User.update(this.state.user.id, this.request.body);
   },
 
   forgotPassword: function *() {

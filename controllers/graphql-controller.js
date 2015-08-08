@@ -11,7 +11,7 @@ const GraphQLController = {
   fetch: function *() {
     var query = this.request.body.query;
 
-    var result = yield GraphQL(schema, query, this.user);
+    var result = yield GraphQL(schema, query, this.state.user);
 
     var errors = result.errors || [];
 
