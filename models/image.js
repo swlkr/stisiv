@@ -1,21 +1,18 @@
-const fs   = require("fs"),
-      path = require("path"),
-      q    = require("q");
+var fs   = require("fs"),
+    path = require("path");
 
-const Image = {
+var Image = {
   read: function() {
-    var deferred = q.defer();
-    var filepath = path.join(__dirname, "../images/pixel.gif");
-
-    fs.readFile(filepath, function(readError, data) {
-      if(readError) {
-        return deferred.reject(readError);
-      }
-
-      deferred.resolve(data);
+    return new Promise((resolve, reject) => {
+      var filepath = path.join(__dirname, "../images/pixel.gif");
+      fs.readFile(filepath, function(error, data) {
+        if(error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
     });
-
-    return deferred.promise;
   }
 };
 
