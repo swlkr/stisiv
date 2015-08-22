@@ -2,7 +2,8 @@ var config   = require("../config.js"),
     acid     = require("acidjs")(config.db.url),
     Template = require("../lib/template"),
     email    = require("../lib/email"),
-    emitter  = require("../lib/emitter");
+    emitter  = require("../lib/emitter"),
+    uuid     = require("uuid");
 
 var subjects = {
   welcome: "Welcome to visics!"
@@ -59,9 +60,6 @@ Emails.on("sent", (to, subject, data, html, text, result) => {
     id: uuid.v4(),
     action: "sent",
     to,
-    subject,
-    data,
-    text,
     result,
     created_at: new Date()
   };
