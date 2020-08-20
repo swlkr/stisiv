@@ -25,7 +25,7 @@
   "dependencies": {
     "acidjs": "1.0.1",
     "babel-eslint": "^4.0.5",
-    "bcrypt": "^0.8.0",
+    "bcrypt": "^5.0.0",
     "db-migrate": "^0.9.18",
     "dot": "^1.0.3",
     "dotenv": "^1.2.0",
